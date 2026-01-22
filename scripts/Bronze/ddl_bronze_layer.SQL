@@ -1,7 +1,7 @@
 /*
----------------------------------------------------------------------------------------
-DDL Script: Creat tables in the bronze schema and loads the data from the source
----------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------
+DDL Script: Create tables in the bronze schema and loads the data from the source csv files
+----------------------------------------------------------------------------------------------
 */
 
 --CreatE tables on the bronze schema
