@@ -3,7 +3,7 @@
 Bulk insert script
 -----------------------------------------------------------------
 Script Purpose:
-       This scrip loads data from the CRM & ERP source to the 
+       This scrip loads data from source csv files to the 
        bronze schema tables
 -----------------------------------------------------------------
 */
