@@ -1,6 +1,6 @@
 /*
 ----------------------------------------------------------------------------------------------
-DDL Script: Create tables in the bronze schema and loads the data from the source csv files
+DDL Script: Create tables in the bronze schema
 ----------------------------------------------------------------------------------------------
 */
 
@@ -86,41 +86,4 @@ CREATE TABLE bronze.erp_px_cat_g1v2 (
 );
 GO
 
-
---Bulk instert data to bronze tables from CRM and ERP source data
-
--------------------------------------------------------------------------'
-TRUNCATE TABLE bronze.crm_cust_info;
-BULK INSERT bronze.crm_cust_info
-FROM 'C:\Users\nwafo\OneDrive\Desktop\Projects\DataWarehouse_cust_info.csv'
-WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', TABLOCK);
-
-TRUNCATE TABLE bronze.crm_prd_info;
-BULK INSERT bronze.crm_prd_info 
-FROM 'C:\Users\nwafo\OneDrive\Desktop\Projects\DataWarehouse_prd_info.csv'
-WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', TABLOCK);
-
-TRUNCATE TABLE bronze.crm_sales_details;
-BULK INSERT bronze.crm_sales_details
-FROM 'C:\Users\nwafo\OneDrive\Desktop\Projects\DataWarehouse_sales_details.csv'
-WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', TABLOCK);
-
-
-TRUNCATE TABLE bronze.erp_loc_a101;
-BULK INSERT bronze.erp_loc_a101
-FROM 'C:\Users\nwafo\OneDrive\Desktop\Projects\DataWarehouse_LOC_A101.csv'
-WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', TABLOCK);
-
-
-TRUNCATE TABLE bronze.erp_cust_az12;
-BULK INSERT bronze.erp_cust_az12
-FROM 'C:\Users\nwafo\OneDrive\Desktop\Projects\DataWarehouse_CUST_AZ12.csv'
-WITH (FIRSTROW = 2, FIELDTERMINATOR = ',', TABLOCK);
-
-
-
-TRUNCATE TABLE bronze.erp_px_cat_g1v2;
-BULK INSERT bronze.erp_px_cat_g1v2
-FROM 'C:\Users\nwafo\OneDrive\Desktop\Projects\DataWarehouse_PX_CAT_G1V2.csv'
-WITH (FIRSTROW = 2, FIELDTERMINATOR=',', TABLOCK);
 
