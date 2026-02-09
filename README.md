@@ -1,2 +1,3 @@
 # sql-data-warehouse-project
-Building a modern data warehouse with sql server
+End-to-end SQL data warehouse with ETL, star schema, and advanced analytics.
+Data Warehouse project implementing Bronze–Silver–Gold architecture
