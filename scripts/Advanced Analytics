@@ -346,7 +346,167 @@ END avg_monthly_spend
 FROM customer_aggregation
 
 
+/*
+---------------------------------------------------------------------------------
+Product Report
+---------------------------------------------------------------------------------
+Report Purpose:
+          This report consolidates key product metrics and behaviour
 
+Highlights:
+       1. Gather essential fields such as product names, category, subcategory and cost details
+	   2. Segments products by revenue to identify High-Performers, Mid-Range or Low-Performers.
+	   3. Agregagates product-level metrics such as:
+	      - total orders
+		  - total sales
+		  - total quantity sold
+		  - total customers
+		  - lifespan (in months)
+		4. Calculate valuable KPIs such as:
+		   - recency (months since last sale)
+		   - average order revenue 
+		   - average monthly revenue
+
+---------------------------------------------------------------------------------
+*/
+
+----Base query to collect the essential product details
+WITH base_product AS
+(SELECT 
+f.order_number,
+f.product_key,
+p.product_name,
+f.customer_key,
+p.category,
+p.subcategory,
+f.order_date,
+f.sales_amount,
+f.quantity,
+p.product_cost
+FROM gold.fact_sales f
+LEFT JOIN
+gold.dim_products p
+ON f.product_key = p.product_key
+WHERE f.order_date IS NOT NULL),
+--Customer Agregagtion: Summarizes key metrics at the customer level
+product_aggregation AS
+(SELECT 
+product_key,
+product_name,
+category,
+subcategory,
+product_cost,
+MAX(order_date) AS last_sale_date,
+COUNT(DISTINCT order_number) AS total_order,
+SUM(sales_amount) AS total_sales,
+SUM(quantity) AS total_quantity,
+COUNT(DISTINCT customer_key) AS total_customers,
+DATEDIFF(month, MIN(order_date), MAX(order_date)) AS product_lifespan,
+AVG(sales_amount/quantity) AS avg_selling_price
+FROM base_product
+GROUP BY 
+product_key,
+product_name,
+category,
+subcategory,
+product_cost)
+--Final query: combine all the customer details into one report
+SELECT 
+product_key,
+product_name,
+category,
+subcategory,
+product_cost,
+last_sale_date,
+total_order,
+total_sales,
+total_quantity,
+total_customers,
+product_lifespan,
+avg_selling_price,
+CASE WHEN total_sales > 50000 THEN 'High-Performer'
+     WHEN total_sales >= 10000 THEN 'Mid-Range'
+	 ELSE 'Low-Performer'
+END product_segment,
+DATEDIFF(month, last_sale_date, GETDATE()) AS months_since_last_Order,
+CASE WHEN total_order = 0 THEN 0
+     ELSE total_sales/total_order
+END avg_order_revenue,
+CASE WHEN product_lifespan = 0 THEN 0
+     ELSE total_sales/product_lifespan
+END avg_monthly_revenue
+FROM product_aggregation
+
+
+--Create a view for the product report
+
+CREATE VIEW gold.product_report AS
+----Base query to collect the essential product details
+WITH base_product AS
+(SELECT 
+f.order_number,
+f.product_key,
+p.product_name,
+f.customer_key,
+p.category,
+p.subcategory,
+f.order_date,
+f.sales_amount,
+f.quantity,
+p.product_cost
+FROM gold.fact_sales f
+LEFT JOIN
+gold.dim_products p
+ON f.product_key = p.product_key
+WHERE f.order_date IS NOT NULL),
+--Customer Agregagtion: Summarizes key metrics at the customer level
+product_aggregation AS
+(SELECT 
+product_key,
+product_name,
+category,
+subcategory,
+product_cost,
+MAX(order_date) AS last_sale_date,
+COUNT(DISTINCT order_number) AS total_order,
+SUM(sales_amount) AS total_sales,
+SUM(quantity) AS total_quantity,
+COUNT(DISTINCT customer_key) AS total_customers,
+DATEDIFF(month, MIN(order_date), MAX(order_date)) AS product_lifespan,
+AVG(sales_amount/quantity) AS avg_selling_price
+FROM base_product
+GROUP BY 
+product_key,
+product_name,
+category,
+subcategory,
+product_cost)
+--Final query: combine all the customer details into one report
+SELECT 
+product_key,
+product_name,
+category,
+subcategory,
+product_cost,
+last_sale_date,
+total_order,
+total_sales,
+total_quantity,
+total_customers,
+product_lifespan,
+avg_selling_price,
+CASE WHEN total_sales > 50000 THEN 'High-Performer'
+     WHEN total_sales >= 10000 THEN 'Mid-Range'
+	 ELSE 'Low-Performer'
+END product_segment,
+DATEDIFF(month, last_sale_date, GETDATE()) AS months_since_last_Order,
+CASE WHEN total_order = 0 THEN 0
+     ELSE total_sales/total_order
+END avg_order_revenue,
+CASE WHEN product_lifespan = 0 THEN 0
+     ELSE total_sales/product_lifespan
+END avg_monthly_revenue
+FROM product_aggregation
 
 
 
